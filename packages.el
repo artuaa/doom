@@ -4,9 +4,9 @@
 ;; use 'M-x doom/reload'.
 
 ;; Lisp editing shortcats
-(package! evil-lisp-state)
+;; (package! evil-lisp-state)
 ;; Evil works with russian keyboard
-(package! reverse-im)
+;; (package! reverse-im)
 
 ;; (package! kubernetes)
 
@@ -39,6 +39,11 @@
 (package! ob-tmux
  :recipe (:host github :repo "ahendriksen/ob-tmux"))
 
+(package! obsidian
+ :recipe (:host github :repo "licht1stein/obsidian.el"))
+
+(package! wrap-region
+ :recipe (:host github :repo "rejeep/wrap-region.el"))
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)

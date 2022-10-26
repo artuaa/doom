@@ -1,7 +1,8 @@
 #+title: Config
 #+startup: overview
-
-* Common
+#+PROPERTY: header-args :results silent.
+* Config
+** Common
 #+begin_quote
 Here are some additional functions/macros that could help you configure Doom:
 
@@ -13,22 +14,27 @@ Here are some additional functions/macros that could help you configure Doom:
   `require' or `use-package'.
 - `map!' for binding new keys
 #+end_quote
+
+Load custom code
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.doom.d/utils/")
+#+end_src
 #+begin_src elisp
 (setq user-full-name "artur sharipov"
       user-mail-address "theartua@gmail.com")
-
 (setq doom-localleader-key ",")
+(setq mac-right-option-modifier 'meta)
+#+end_src
 
-
+Russian keyboard
+#+begin_src elisp :tangle no
 (use-package reverse-im
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
   (reverse-im-mode t))
-
-
-(setq mac-right-option-modifier 'control)
 #+end_src
+
 Initialize ~path~
 #+begin_src emacs-lisp
 (exec-path-from-shell-initialize)
@@ -39,13 +45,26 @@ Line numbers
 (setq display-line-numbers-type nil)
 (global-display-line-numbers-mode 0)
 #+end_src
-* FZF
+Repeat mode
+#+begin_quote
+Repeat Mode lets you call multiple commands in a keymap without repeating the prefix each time. So you can press
+
+C-x o, o, o, … to switch windows repeatedly. O will cycle backwards.
+C-x u, u, u, … to undo repeatedly,
+C-x @ C-n, n, p, f, b,… to traverse headings,
+M-g n, n, p, n,… to navigate errors or grep matches, and so on.
+#+end_quote
 #+begin_src emacs-lisp
+(repeat-mode t)
+#+end_src
+
+** FZF
+#+begin_src emacs-lisp :tangle no
 (map! :leader
       :desc "Commands"
       "SPC" 'fzf-projectile)
 #+end_src
-* Clojure
+** Clojure
 Cider buffer
 #+begin_src emacs-lisp
 (setq cider-save-file-on-load t)
@@ -60,8 +79,6 @@ Cider buffer
   ;; (setq clojure-indent-style 'align-arguments)
   ;; (setq clojure-align-forms-automatically nil)
   )
-
-
 #+end_src
 Debug macros =persistent-scope=
 #+begin_src emacs-lisp
@@ -84,9 +101,8 @@ Debug macros =persistent-scope=
     (insert "(persist-scope)")
     (cider-eval-defun-at-point)
     (delete-region beg (point))))
-
 #+end_src
-* Appearance
+** Appearance
 #+begin_quote
 
 Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -112,14 +128,14 @@ available. You can either set `doom-theme' or manually load a theme with the
 (setq doom-theme 'doom-one)
 
 (setq doom-font (
-font-spec :family "iosevka"
+font-spec :family "iosevka light"
 :size 14))
 #+end_src
 Spellchecker highlight color
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (set-face-attribute 'flyspell-incorrect nil :underline '(:color "#ffc800" :style wave))
 #+end_src
-* Email client
+** Email client
 #+begin_src elisp
 (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.6.10/share/emacs/site-lisp/mu/mu4e")
 
@@ -155,10 +171,8 @@ Spellchecker highlight color
 
 (setq mu4e-context-policy 'ask-if-none
       mu4e-compose-context-policy 'always-ask)
-
-
 #+end_src
-* RSS reader
+** RSS reader
 #+begin_src elisp
 (setq rmh-elfeed-org-files '("/Users/artua/org/elfeed.org"))
 
@@ -172,10 +186,8 @@ Spellchecker highlight color
        "u" #'elfeed-update))
 
 (add-hook! 'elfeed-search-mode-hook 'elfeed-update)
-
-
 #+end_src
-* Evil
+** Evil
 Friendly evil escape
 #+begin_src emacs-lisp
 (setq evil-move-cursor-back nil)
@@ -184,7 +196,7 @@ Disable evil clipboard
 #+begin_src emacs-lisp
 (setq x-select-enable-clipboard t)
 #+end_src
-* Autosave
+** Autosave
 #+begin_src elisp
 (use-package super-save
   :config
@@ -196,8 +208,8 @@ Disable evil clipboard
   (super-save-mode +1))
 
 #+end_src
-* Lisp structure editing
-#+begin_src elisp
+** Lisp structure editing
+#+begin_src elisp :tangle no
 (use-package! evil-lisp-state
   :init
   (setq evil-lisp-state-global t)
@@ -207,11 +219,13 @@ Disable evil clipboard
 (after! which-key
   (add-to-list
     'which-key-replacement-alist
-    '((nil . "evil-lisp-state-") . (nil . ""))))
-
-
+    '((nil . "evil-lisp-state-") . (nil . "")))
 #+end_src
-* Spacemacs like surround and go to test hotkey
+** Expand region
+#+begin_src elisp
+(global-set-key (kbd "C-s") 'er/expand-region)
+#+end_src
+** Spacemacs like surround and go to test hotkey
 #+begin_src elisp
 (map! :v "s" #'evil-surround-region)
 
@@ -219,16 +233,7 @@ Disable evil clipboard
       ;;"TAB" #'evil-switch-to-windows-last-buffer
       "p a" #'projectile-toggle-between-implementation-and-test)
 #+end_src
-* Expand region
-#+begin_src elisp
-(map! :n "C-w" #'er/expand-region
-      :m "C-w" #'er/expand-region
-      :i "C-w" #'er/expand-region
-      :r "C-w" #'er/expand-region
-      :v "C-w" #'er/expand-region)
-#+end_src
-
-* Helm
+** Helm
 ff more useful
 #+begin_src elisp
 (map! (:after helm-files :map (helm-find-files-map helm-read-file-map)
@@ -237,21 +242,27 @@ ff more useful
        "C-k" #'helm-previous-line
        "C-l" #'helm-execute-persistent-action))
 
+(map! (:after helm-files :map (helm-find-files-map helm-read-file-map)
+       "C-b" #'helm-find-files-up-one-level
+       "C-f" #'helm-execute-persistent-action))
 #+end_src
-* Vs code like navigation
+
+** Vs code like navigation
 #+begin_src elisp
-(map! "s-P" #'helm-M-x
-      "s-p" #'helm-projectile
-      "s-o" #'helm-find-files
-      "s-O" #'imenu
-      "s-b" #'+neotree/open
-      ;; "s-b" #'fzf-switch-buffer
-      "s-w" #'kill-current-buffer
-      "s-g" #'magit-status
-      "s-d" #'evil-multiedit-match-and-next
-      "s-." #'lsp-execute-code-action)
+(global-set-key (kbd "s-P") 'helm-M-x)
+(global-set-key (kbd "s-p") 'helm-projectile)
+(global-set-key (kbd "s-O") 'imenu)
+(global-set-key (kbd "s-o") 'helm-find-files)
+(global-set-key (kbd "s-b") '+neotree/open)
+(global-set-key (kbd "s-w") 'kill-current-buffer)
+(global-set-key (kbd "s-g") 'magit-status)
+(global-set-key (kbd "s-.") 'eglot-code-actions)
 #+end_src
-* Org Mode
+Multiple cursors (evil depended)
+#+begin_src emacs-lisp :tangle no
+(global-set-key (kbd "s-d") 'evil-multiedit-match-and-next)
+#+end_src
+** Org Mode
 #+begin_src emacs-lisp
 (setq org-directory "~/org/")
 #+end_src
@@ -305,4 +316,51 @@ Evaluate bash codeblocks directly to tmux session
   ;; emacsclient -e "(progn (vterm) (vterm-send-string \"$*\") (vterm-send-return))"
   (org-babel-tmux-terminal "/Applications/Alacritty.app/Contents/MacOS/alacritty")
   (org-babel-tmux-terminal-opts '("-t" "ob-tmux" "-e")))
+#+end_src
+** Obsidian
+#+begin_src emacs-lisp
+(use-package obsidian
+  :ensure t
+  :demand t
+  :config
+  (obsidian-specify-path "~/vault")
+  (global-obsidian-mode t)
+  ;; :custom
+  ;; This directory will be used for `obsidian-capture' if set.
+  ;; (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+  ("C-c C-o" . obsidian-follow-link-at-point)
+  ;; Jump to backlinks
+  ("C-c C-b" . obsidian-backlink-jump)
+  ;; If you prefer you can use `obsidian-insert-link'
+  ("C-c C-l" . obsidian-insert-wikilink)))
+#+end_src
+** Non evil
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-:") 'avy-goto-char)
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-.") 'repeat)
+#+end_src
+Wrapping
+Now try selecting a region and press any of the following keys: ", ', (, {, [.
+#+begin_src emacs-lisp
+(use-package! wrap-region
+  :init
+  (wrap-region-mode t))
+#+end_src
+Go to last change like vim
+#+begin_src emacs-lisp
+(require 'goto-last-change)
+(map! :leader "." 'goto-last-change)
+#+end_src
+Multiple cursors
+#+begin_src emacs-lisp
+(global-set-key (kbd "s-d") 'mc/mark-next-like-this-word)
+(global-set-key (kbd "s-D") 'mc/mark-previous-like-this-word)
+#+end_src
+Emacs "Visual" mode
+ ~C-SPC~ is default
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-SPC") 'set-mark-command)
 #+end_src
